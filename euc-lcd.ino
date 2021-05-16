@@ -250,17 +250,8 @@ void analogMeter()
     // Draw scale arc, don't draw the last part
     if (i < 50) tft.drawLine(x0, y0, x1, y1, TFT_BLACK);
   }
-
-
 }
 
-// #########################################################################
-// Update needle position
-// This function is blocking while needle moves, time depends on ms_delay
-// 10ms minimises needle flicker if text is drawn within needle sweep area
-// Smaller values OK if text not in sweep area, zero for instant movement but
-// does not look realistic... (note: 100 increments for full scale deflection)
-// #########################################################################
 void plotNeedle(int value, byte ms_delay)
 {
   if (value < -10) value = -10; // Limit value to emulate needle end stops
