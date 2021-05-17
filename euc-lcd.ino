@@ -28,6 +28,8 @@ static BLEUUID     readcharUUID("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 static boolean doConnect = false;
 static boolean connected = false;
 static boolean doScan = false;
+static boolean found = false;
+
 static BLERemoteCharacteristic *pReadCharacteristic, *pWriteCharacteristic;
 static BLEAdvertisedDevice *myDevice;
 
@@ -95,6 +97,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
          myDevice = new BLEAdvertisedDevice(advertisedDevice);
          doConnect = true;
          doScan = true;
+         found = true;
       }     
   } 
 }; 
@@ -115,6 +118,15 @@ void setup(void) {
   pBLEScan->setWindow(449);
   pBLEScan->setActiveScan(true);
   pBLEScan->start(10, false); 
+
+  delay(1000);
+  if (found == false) {
+    tft.setTextColor(TFT_RED); 
+    tft.println("\nFailed to find bluetooth device");
+    delay(30000);
+    esp_deep_sleep_start(); // < 6mA
+    }    
+  tft.fillScreen(TFT_BLACK);
 }
 
 void loop() {
@@ -124,12 +136,7 @@ float Range,Speed,Trip;
    if (doConnect == true) {
     if (!connectToServer()) Serial.println("\nFailed to connect");
     doConnect = false;
-  } else {
-    tft.setTextColor(TFT_RED); 
-    tft.println("\nFailed to find bluetooth device");
-    delay(30000);
-    esp_deep_sleep_start(); // < 6mA
-  }
+   } 
 
   if (connected) {
     // ninebot one variables at http://www.gorina.es/9BMetrics/variables.html
@@ -260,8 +267,6 @@ void analogMeter()
     // Draw scale arc, don't draw the last part
     if (i < 50) tft.drawLine(x0, y0, x1, y1, TFT_BLACK);
   }
-
-
 }
 
 void plotNeedle(int value, byte ms_delay)
