@@ -85,8 +85,11 @@ bool connectToServer() {
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
   void onResult(BLEAdvertisedDevice advertisedDevice) {
-   // Ninebot S2 begins N2OSL...
+      
       String name = advertisedDevice.getName().c_str();
+      tft.setTextColor(TFT_BLUE);
+      if (name !="") tft.print(".");
+      // Ninebot S2 begins N2OSL... 
       if (name.startsWith("N2O")) {
          BLEDevice::getScan()->stop();
          myDevice = new BLEAdvertisedDevice(advertisedDevice);
@@ -100,17 +103,18 @@ void setup(void) {
   Serial.begin(115200); // For debug
   tft.init();
   tft.setRotation(1);
-
   tft.fillScreen(TFT_BLACK);
+  
   tft.setTextColor(TFT_WHITE); 
-
+  tft.println("Scanning for bluetooth device N2O..");
+  
   BLEDevice::init("");
   BLEScan* pBLEScan = BLEDevice::getScan();
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
   pBLEScan->setInterval(1349);
   pBLEScan->setWindow(449);
   pBLEScan->setActiveScan(true);
-  pBLEScan->start(0, false); 
+  pBLEScan->start(10, false); 
 }
 
 void loop() {
@@ -118,8 +122,13 @@ int Batt;
 float Range,Speed,Trip;
 
    if (doConnect == true) {
-    if (!connectToServer()) Serial.println("Failed to connect");
+    if (!connectToServer()) Serial.println("\nFailed to connect");
     doConnect = false;
+  } else {
+    tft.setTextColor(TFT_RED); 
+    tft.println("\nFailed to find bluetooth device");
+    delay(30000);
+    esp_deep_sleep_start(); // < 6mA
   }
 
   if (connected) {
@@ -146,7 +155,8 @@ float Range,Speed,Trip;
 
       pWriteCharacteristic->writeValue(tripmileage, 7);
       Trip = wheelstat / 160;  
-      
+
+      tft.setTextColor(TFT_WHITE);
       tft.drawString(String(Trip) +" miles", 10, 10, 2); //  at top left
       tft.fillRect(0, (119 - 20), 239, 131, TFT_BLACK);
       tft.drawString(String(Range) + " mi", 10, 100 , 2); //  at bottom left
@@ -250,6 +260,8 @@ void analogMeter()
     // Draw scale arc, don't draw the last part
     if (i < 50) tft.drawLine(x0, y0, x1, y1, TFT_BLACK);
   }
+
+
 }
 
 void plotNeedle(int value, byte ms_delay)
