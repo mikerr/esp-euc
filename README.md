@@ -18,7 +18,9 @@ Auto connects to wheel on power up.
 ## Technical Notes:
 
 Info on Ninebot ONE protocol:
+
 [http://www.gorina.es/9BMetrics/protocol.html]
+
 [http://www.gorina.es/9BMetrics/variables.html]
 
 Ninebot S2 uses different service / characteristic
