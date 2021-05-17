@@ -23,6 +23,7 @@ Info on Ninebot ONE protocol:
 
 Ninebot S2 uses different service / characteristic
 
+''''
 SERVICE - 6e400001-b5a3-f393-e0a9-e50e24dcca9e
 WRITE - 6e400002-b5a3-f393-e0a9-e50e24dcca9e
 READ - 6e400003-b5a3-f393-e0a9-e50e24dcca9e
