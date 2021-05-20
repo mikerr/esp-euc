@@ -17,7 +17,7 @@ Auto connects to wheel on power up.
 
 ## Technical Notes:
 
-Info on Ninebot ONE protocol:
+Info on original Ninebot ONE protocol:
 
 [http://www.gorina.es/9BMetrics/protocol.html]
 
