@@ -91,8 +91,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
       String name = advertisedDevice.getName().c_str();
       tft.setTextColor(TFT_BLUE);
       if (name !="") tft.print(".");
-      // Ninebot S2 begins N2OSL... 
-      if (name.startsWith("N2O")) {
+      // check for BT service ID
+      if (advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(serviceUUID)) {
          BLEDevice::getScan()->stop();
          myDevice = new BLEAdvertisedDevice(advertisedDevice);
          doConnect = true;
@@ -109,7 +109,7 @@ void setup(void) {
   tft.fillScreen(TFT_BLACK);
   
   tft.setTextColor(TFT_WHITE); 
-  tft.println("Scanning for bluetooth device N2O..");
+  tft.println("Scanning for bluetooth device ..");
   
   BLEDevice::init("");
   BLEScan* pBLEScan = BLEDevice::getScan();
@@ -164,8 +164,9 @@ float Range,Speed,Trip;
       Trip = wheelstat / 160;  
 
       tft.setTextColor(TFT_WHITE);
+      tft.fillRect(0, 0, 239, 24, TFT_BLACK);
       tft.drawString(String(Trip) +" miles", 10, 10, 2); //  at top left
-      tft.fillRect(0, (119 - 20), 239, 131, TFT_BLACK);
+      tft.fillRect(0, 100, 239, 131, TFT_BLACK);
       tft.drawString(String(Range) + " mi", 10, 100 , 2); //  at bottom left
       tft.drawString("remaining", 10, 115, 2); //  at bottom left
       tft.drawString(String(Batt) + " %", 193, 100, 2); //  at bottom right
