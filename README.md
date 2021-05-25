@@ -5,14 +5,10 @@ Read speed & battery info from an EUC (ninebot one S2) and display it on ESP32 L
 
 ## Requirements:
 
-- ESP32 with display
-  Supporting 
-             TTGO T-Display ESP32 LCD
-             M5StickC
-             T-Watch
+- ESP32 with display (  Supporting  TTGO T-Display | M5StickC | LilyGo T-Watch )
              
              
-- Ninebot ONE wheel .. currently supports A1/A2/S1/S2
+- Ninebot ONE wheel .. currently supports A1/A2/S1/S2 (possibly Z10)
 
 ## Usage:
 
