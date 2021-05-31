@@ -9,7 +9,7 @@ float ltx = 0;    // Saved x coord of bottom of needle
 uint16_t osx = 120, osy = 120; // Saved x & y coords
 uint32_t updateTime = 0;       // time for next update
 
-int old_analog =  -999; // Value last displayed
+int old_analog =  0; // Value last displayed
 
 int value[6] = {0, 0, 0, 0, 0, 0};
 int old_value[6] = { -1, -1, -1, -1, -1, -1};
@@ -44,6 +44,7 @@ class MyClientCallback : public BLEClientCallbacks {
   void onDisconnect(BLEClient* pclient) {
     connected = false;
     Serial.println("Disconnected");
+    exit(0); //reboot !
   }
 };
 
@@ -168,28 +169,22 @@ static float Range,Speed,Trip,Amps,Volts,Temp;
       Trip = wheelstat / 160;   
       
       M5.Lcd.setTextColor(TFT_WHITE);
-      M5.Lcd.fillRect(0, 0, 239, 10, TFT_BLACK); 
-      M5.Lcd.drawString(String(Trip) +" mi", 10, 0, 2); //  at top left
+      M5.Lcd.fillRect(0, 0, 239, 15, TFT_BLACK); 
+      M5.Lcd.drawString(String(Trip) +" mi", 10, 0, 2); //  at top left   
+      
+      M5.Lcd.fillRect(10, 60, 239, 131, TFT_BLACK);
+      M5.Lcd.drawString(String(Range) + " mi", 10, 60 , 2); // bottom left
+      M5.Lcd.drawString(String(Batt) + " %", 120, 60, 2); //   bottom right
       }
- 
-    M5.Lcd.fillRect(10, 60, 239, 131, TFT_BLACK);
-    M5.Lcd.drawString(String(Range) + " mi", 10, 60 , 2); //  at bottom left
-    //M5.Lcd.drawString("remaining", 10, 115, 2); //  at bottom left
-    M5.Lcd.drawString(String(Batt) + " %", 120, 60, 2); //  at bottom right
-    //M5.Lcd.drawString("battery", 100, 80, 2);
 
     // check speed as quick as possible)
- 
-    //if (wheelstat > 32768) Amps = wheelstat - 65536;
-    //else Amps = wheelstat;
-    //Amps = (Amps + 32) / 10.0f;
     
     pWriteCharacteristic->writeValue(currentspeed, 7);
     Speed = wheelstat / 1600.0f;
 
     analogMeter();
     
-    M5.Lcd.fillRect(50, 40, 65 ,20, TFT_BLACK); 
+    M5.Lcd.fillRect(50, 40, 63, 20, TFT_BLACK); 
     M5.Lcd.drawString(String(Speed), 50, 40, 4); 
     
     plotNeedle((Speed / 20) * 100, 0); 
@@ -203,9 +198,6 @@ static float Range,Speed,Trip,Amps,Volts,Temp;
 // #########################################################################
 void analogMeter()
 {
-
-  M5.Lcd.setTextColor(TFT_WHITE);  // Text colour
-
   // Draw ticks every 5 degrees from -50 to +50 degrees (100 deg. FSD swing)
   for (int i = -50; i < 51; i += 5) {
     // Long scale tick length
@@ -247,7 +239,7 @@ void analogMeter()
 
     // Short scale tick length
     if (i % 25 != 0) tl = 8;
-
+    
     // Recalculate coords incase tick lenght changed
     x0 = sx * (M_SIZE*100 + tl) + M_SIZE*120;
     y0 = sy * (M_SIZE*100 + tl) + M_SIZE*150;
@@ -258,6 +250,7 @@ void analogMeter()
     M5.Lcd.drawLine(x0, y0, x1, y1, TFT_BLACK);
 
     // Check if labels should be drawn, with position tweaks
+    M5.Lcd.setTextColor(TFT_WHITE);  // Text colour
     if (i % 25 == 0) {
       // Calculate label positions
       x0 = sx * (M_SIZE*100 + tl + 10) + M_SIZE*120;
@@ -279,13 +272,10 @@ void analogMeter()
     // Draw scale arc, don't draw the last part
     if (i < 50) M5.Lcd.drawLine(x0, y0, x1, y1, TFT_BLACK);
   }
-
-  M5.Lcd.drawRect(1, M_SIZE*3, M_SIZE*236, M_SIZE*126, TFT_BLACK); // Draw bezel line
 }
 
 void plotNeedle(int value, byte ms_delay)
 {
-
   if (value < -10) value = -10; // Limit value to emulate needle end stops
   if (value > 110) value = 110;
 
