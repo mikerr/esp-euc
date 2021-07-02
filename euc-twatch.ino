@@ -116,7 +116,8 @@ void setup(void) {
   //ttgo->tft->init();
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
-    ttgo->openBL();
+    ttgo->openBL(); //turn on backlight
+    ttgo->motor_begin();
     
   ttgo->tft->setRotation(2);
   ttgo->tft->fillScreen(TFT_BLACK);
@@ -203,6 +204,7 @@ float Range,Speed,Trip;
     
     plotNeedle((Speed / 20) * 100, 0); 
     delay(200);
+    if (Speed > 13) ttgo->motor->onec();
   }
  
   
