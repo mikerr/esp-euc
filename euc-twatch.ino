@@ -13,9 +13,6 @@ TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
 #include <LilyGoWatch.h>
 TTGOClass *ttgo;
 
-
-
-
 #define TFT_GREY 0x5AEB
 #define TFT_ORANGE      0xFD20      /* 255, 165,   0 */
 
@@ -113,15 +110,19 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
 void setup(void) {
   Serial.begin(115200); // For debug
-  //ttgo->tft->init();
-    ttgo = TTGOClass::getWatch();
-    ttgo->begin();
-    ttgo->openBL(); //turn on backlight
-    ttgo->motor_begin();
+  ttgo = TTGOClass::getWatch();
+  ttgo->begin();
+  ttgo->openBL(); //turn on backlight
+  ttgo->motor_begin();
     
   ttgo->tft->setRotation(2);
   ttgo->tft->fillScreen(TFT_BLACK);
   
+  int level = ttgo->power->getBattPercentage();
+  ttgo->tft->setTextColor(TFT_BLUE);
+  ttgo->tft->print("Battery level: "); 
+  ttgo->tft->print(level);
+  ttgo->tft->println(" %\n\n");
   ttgo->tft->setTextColor(TFT_WHITE); 
   ttgo->tft->println("Scanning for bluetooth device ..");
   
@@ -137,8 +138,8 @@ void setup(void) {
   if (found == false) {
     ttgo->tft->setTextColor(TFT_RED); 
     ttgo->tft->println("\nFailed to find bluetooth device");
-    delay(30000);
-    esp_deep_sleep_start(); // < 6mA
+    delay(10000);
+    esp_deep_sleep_start(); // < 6mA     
     }    
   ttgo->tft->fillScreen(TFT_BLACK);
 }
@@ -176,7 +177,6 @@ float Range,Speed,Trip;
 
       pWriteCharacteristic->writeValue(tripmileage, 7);
       Trip = wheelstat / 160.0f;  
-
      
       ttgo->tft->fillRect(0, 0, 239, 24, TFT_BLACK);
       ttgo->tft->setTextColor(TFT_CYAN);
