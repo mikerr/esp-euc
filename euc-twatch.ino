@@ -57,6 +57,7 @@ class MyClientCallback : public BLEClientCallbacks {
   void onDisconnect(BLEClient* pclient) {
     connected = false;
     Serial.println("Disconnected");
+    exit(0);
   }
 };
 
@@ -146,6 +147,7 @@ void setup(void) {
 
 void loop() {
 int Batt;
+static float Limit=12;
 float Range,Speed,Trip;
 
    if (doConnect == true) {
@@ -198,13 +200,35 @@ float Range,Speed,Trip;
 
     analogMeter();
   
-    ttgo->tft->fillRect(100, 75, 70 ,40, TFT_BLACK);
-    ttgo->tft->drawString(String(Speed), 100, 75, 4); 
-    ttgo->tft->drawString("mph",130, 95, 2);   
+    //ttgo->tft->fillRect(100, 75, 70 ,40, TFT_BLACK);
+    //ttgo->tft->drawString(String(Speed), 100, 75, 4); 
+    //ttgo->tft->drawString("mph",130, 95, 2);   
+
+    ttgo->tft->fillRect(0, 175, 150 ,90, TFT_BLACK);
+    int xx = 60;
+    if (Speed >= 10) xx = 40;
+    ttgo->tft->drawString(String(Speed), xx, 175, 7); 
+    ttgo->tft->drawString("mph",190, 195, 2);   
     
     plotNeedle((Speed / 20) * 100, 0); 
     delay(200);
-    if (Speed > 13) ttgo->motor->onec();
+    if (Speed > Limit) ttgo->motor->onec();
+
+    int16_t x, y;
+    if (ttgo->getTouch(x, y)) {
+      
+      if (y > 180) {
+        if (x > 190) Limit++;  
+        if (x < 50) Limit--; 
+        
+        ttgo->tft->fillRect(0, 150, 170 ,80, TFT_BLACK);
+        ttgo->tft->drawString("limit",100, 150, 2);
+        xx = 60;
+        if (Limit >= 10) xx = 40;
+        ttgo->tft->drawString(String(Limit), xx, 175, 7); 
+        delay(1000); 
+      }
+    }
   }
  
   
